@@ -13,31 +13,53 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- Defining player variables
-local playerSize = 10
-local playerVelocity = 3
-local fishlineSpeedModifer = 1
-local fishlineSpeed = 2 * fishlineSpeedModifer
-local playerX, playerY = 30, 120
+local playerData = {
+    playerVelocity = 3,
+    playerX = 30,
+    playerY = 120,
+}
 
-local gameState = "casting"
+local fishingRod = {
+    fishlineSpeedModifer = 1,
+    fishlineSpeed = 2
+}
+-- preparing, casting, reeling, sailing
+local gameStates = {
+    preparing = "preparing",
+    sailing = "sailing",
+    casting = "casting",
+    reeling = "reeling"
+}
+local gameState = gameStates.casting
 
 -- Drawing player image
 local playerImage = gfx.image.new("assets/fisherman")
 local playerSprite = gfx.sprite.new(playerImage)
-local x0, y0, x1, y1 = playerX-10, playerY-20, 350, playerY+20
+
+local reelLength = {
+    x0 = 0,
+    y0 = 0,
+    x1 = 0,
+    y1 = 0
+}
+
 playerSprite:setScale(0.6)
-playerSprite:moveTo(playerX, playerY)
+playerSprite:moveTo(playerData.playerX, playerData.playerY)
 playerSprite:add()
 
 local function movePlayer(currentX, currentY)
     if currentY >= 10 and pd.buttonIsPressed(pd.kButtonUp) then
-        playerSprite:moveBy(0, -playerVelocity)
+        playerSprite:moveBy(0, -playerData.playerVelocity)
     end
     if currentY <= 230 and pd.buttonIsPressed(pd.kButtonDown) then
-        playerSprite:moveBy(0, playerVelocity)
+        playerSprite:moveBy(0, playerData.playerVelocity)
     end 
 end
 
+local function castReel(currentX, currentY)
+    reelLength.x0, reelLength.y0, reelLength.x1, reelLength.y1 = currentX+10, currentY, 350, currentY+20
+    gfx.drawLine(reelLength.x0, reelLength.y0, reelLength.x1, reelLength.y1)
+end
 -- playdate.update function is required in every project!
 function pd.update()
     gfx.sprite.update()
@@ -47,21 +69,23 @@ function pd.update()
     local change, acceleratedChange = pd.getCrankChange()
     local currentX, currentY = playerSprite:getPosition()
 
-    if gameState == "casting" then
+    if gameState == gameStates.casting then
         movePlayer(currentX, currentY)
 
         if pd.buttonJustPressed(pd.kButtonA) then
-            gameState = "reeling"
-            x0, y0, x1, y1 = currentX+10, currentY, 350, currentY+20
+            gameState = gameStates.reeling
         end
         
-    elseif gameState == "reeling" then
-        gfx.drawLine(x0, y0, x1, y1)
-        if x1 >= x0 then
+    elseif gameState == gameStates.reeling then
+        castReel(currentX, currentY)
+        
+        if reelLength.x1 >= reelLength.x0 then
             if change >= 10 and acceleratedChange ~= nil and acceleratedChange >= 20 then
-                fishlineSpeedModifer = acceleratedChange
-                x1 -= fishlineSpeed
+                fishingRod.fishlineSpeedModifer = acceleratedChange
+                reelLength.x1 -= fishingRod.fishlineSpeed * fishingRod.fishlineSpeedModifer
             end
         end
+    elseif gameState == gameStates.sailing then
+        local boatspeed = acceleratedChange
     end
 end
