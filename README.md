@@ -1,7 +1,7 @@
 
 ![TemplateBanner](https://github.com/user-attachments/assets/a0e438d1-9923-4525-ae5c-c0d179ec3bc7)
 
-# Playdate Template
+# FISHERMAN GAME based on Playdate Template
 This template will help you set up everything you need to start making a game for the Playdate. We will be creating a development environment to make a Playdate game in Lua using Visual Studio Code. Sets up automated builds, autocomplete, and debugging. Works for Windows, Mac, and Linux.
 
 You can find a video tutorial on how to use this template and make your first Playdate game here: https://youtu.be/UZ04rk3lLqU

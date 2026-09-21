@@ -58,7 +58,7 @@ function pd.update()
     elseif gameState == "reeling" then
         gfx.drawLine(x0, y0, x1, y1)
         if x1 >= x0 then
-            if change >= 10 and acceleratedChange >= 20 then
+            if change >= 10 and acceleratedChange ~= nil and acceleratedChange >= 20 then
                 fishlineSpeedModifer = acceleratedChange
                 x1 -= fishlineSpeed
             end
