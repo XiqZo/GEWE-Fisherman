@@ -1,9 +1,10 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+
+GameEndScene = {}
+class('GameEndScene').extends(gfx.sprite)
  
-class('EndScene').extends(gfx.sprite)
- 
-function EndScene:init()
+function GameEndScene:init()
     local caught = GAME_DATA.catchOfTheDay
     local title = caught > 0 and ("Catch of the day: " .. caught) or "Better luck next time!"
  
@@ -20,7 +21,7 @@ function EndScene:init()
     self:add()
 end
  
-function EndScene:update()
+function GameEndScene:update()
     if pd.buttonJustPressed(pd.kButtonB) then
         -- New day: reset the catch and save it
         GAME_DATA.catchOfTheDay = 0

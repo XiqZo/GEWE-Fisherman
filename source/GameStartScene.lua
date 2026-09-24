@@ -1,6 +1,8 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
- 
+
+import "CoreLibs/object"
+
 -- Text positions on screen (400x240). The artwork sits in the middle, so the text
 -- goes in the free corners. Tweak these if anything overlaps.
 local CATCH_X <const>, CATCH_Y <const> = 10, 10        -- top-left: "Catch so far"
@@ -8,10 +10,11 @@ local CONTROLS_X <const>, CONTROLS_Y <const> = 10, 200 -- bottom-left: controls
 local LINE_HEIGHT <const> = 20
  
 -- The "pier": hub scene where you choose to go fishing or end the day
+GameStartScene = {}
 class('GameStartScene').extends(gfx.sprite)
  
 function GameStartScene:init()
-    local pierSprite = gfx.sprite.new(gfx.image.new("assets/catchSomething"))
+    local pierSprite = gfx.sprite.new(gfx.image.new("assets/catchsomething"))
     pierSprite:moveTo(200, 120)
     pierSprite:add()
  
@@ -35,6 +38,6 @@ function GameStartScene:update()
     if pd.buttonJustPressed(pd.kButtonB) then
         SCENE_MANAGER:switchScene(FishingScene)
     elseif pd.buttonJustPressed(pd.kButtonA) then
-        SCENE_MANAGER:switchScene(EndScene)
+        SCENE_MANAGER:switchScene(GameEndScene)
     end
 end

@@ -2,6 +2,7 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
+SceneManager = {}
 class('SceneManager').extends()
 
 function SceneManager:init()

@@ -7,7 +7,7 @@ local STATES <const> = {
     reeling = "reeling",
 }
 
-
+FishingScene = {}
 class('FishingScene').extends(gfx.sprite)
 
 local function directionAllowed(directions, direction)

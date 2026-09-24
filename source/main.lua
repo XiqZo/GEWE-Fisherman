@@ -5,14 +5,14 @@ import "CoreLibs/timer"
 import "CoreLibs/easing"
 import "CoreLibs/ui"
 
-import "sceneManager"
-import "gameStartScene"
-import "fishingScene"
-import "gameEndScene"
+import "SceneManager"
+import "GameStartScene"
+import "FishingScene"
+import "GameEndScene"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
- 
+
 pd.display.setRefreshRate(30)
 
 -- Data that outlives scenes AND app restarts (loaded from disk if it exists)
