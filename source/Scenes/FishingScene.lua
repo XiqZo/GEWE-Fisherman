@@ -140,9 +140,9 @@ function FishingScene:fightingFishUpdate(
     if reelSpeed >= self.safeMinReelSpeed
         and reelSpeed <= self.safeMaxReelSpeed
     then
-        self.reelProgress += 100 / (5 * 30)
+        self.reelProgress += 100 / (2 * 30)
 
-        self.escapeTimer -= 2 / 30
+        self.escapeTimer -= 3 / 30
 
         if self.escapeTimer < 0 then
             self.escapeTimer = 0
