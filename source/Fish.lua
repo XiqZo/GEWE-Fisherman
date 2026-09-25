@@ -7,10 +7,9 @@ class("Fish").extends()
 function Fish:init()
     self.spawned = false
     self.nextSpawn = nil
+    self.type = nil -- set on spawn, see fishTypes.lua (FISH_TYPES / pickFishType)
 
-    self.sprite = gfx.sprite.new(
-        gfx.image.new("assets/fish1")
-    )
+    self.sprite = gfx.sprite.new() -- image is set per-spawn, once a type is picked
 
     self.sprite:setZIndex(5)
 
@@ -40,6 +39,8 @@ function Fish:update(time)
     end
 
     if time >= self.nextSpawn then
+        self.type = pickFishType()
+        self.sprite:setImage(self.type.image)
         self:MoveFish()
 
         self.sprite:add()
@@ -49,13 +50,14 @@ function Fish:update(time)
 end
 
 function Fish:remove()
-        self.spawned = false
-        self.nextSpawn = nil
-        self.sprite:remove()
-    end
+    self.spawned = false
+    self.nextSpawn = nil
+    self.type = nil
+    self.sprite:remove()
+end
 
-    function Fish:checkCollision(hookX, hookY)
-        if not self.spawned then
+function Fish:checkCollision(hookX, hookY)
+    if not self.spawned then
         return false
     end
 

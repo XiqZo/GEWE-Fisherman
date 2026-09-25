@@ -7,6 +7,7 @@ import "CoreLibs/ui"
 
 import "SceneManager"
 
+import "FishTypes"
 import "Player"
 import "FishingRod"
 import "Fish"

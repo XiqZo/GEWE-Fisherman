@@ -140,7 +140,7 @@ function FishingScene:fightingFishUpdate(
     if reelSpeed >= self.safeMinReelSpeed
         and reelSpeed <= self.safeMaxReelSpeed
     then
-        self.reelProgress += 100 / (2 * 30)
+        self.reelProgress += 100 / (3 * 30)
 
         self.escapeTimer -= 3 / 30
 
@@ -164,6 +164,10 @@ function FishingScene:fightingFishUpdate(
 
     if self.reelProgress >= 100 then
         GAME_DATA.catchOfTheDay += 1
+
+    -- self.fish.type is set by Fish:update() when it spawned; record that species
+        local id = self.fish.type.id
+        GAME_DATA.catches[id] = (GAME_DATA.catches[id] or 0) + 1
 
         self.fish:remove()
 
