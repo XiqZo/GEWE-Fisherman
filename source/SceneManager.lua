@@ -1,15 +1,22 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-class('SceneManager').extends()
+SceneManager = {}
+class("SceneManager").extends()
 
 function SceneManager:init()
-    self.transitionTime = 1000
+    self.transitionTime = 500
     self.transitioning = false
+
+    self.currentScene = nil
+    self.newScene = nil
+    self.sceneArgs = nil
+
+    self.transitionSprite = nil
 end
 
-function SceneManager:switchScene(scene, ...)
 
+function SceneManager:switchScene(scene, ...)
     if self.transitioning then
         return
     end
@@ -17,78 +24,137 @@ function SceneManager:switchScene(scene, ...)
     self.transitioning = true
 
     self.newScene = scene
-    local args = {...}
-    self.sceneArgs = args
+    self.sceneArgs = { ... }
 
-     self:startTransition()
+    self:startTransition()
 end
 
 
 function SceneManager:startTransition()
-    local transitionTimer = self:wipeTransition(0, 400)
+
+    -- Cover the current scene.
+    local transitionTimer =
+        self:wipeTransition(0, 400)
 
     transitionTimer.timerEndedCallback = function()
+
+        -- Now that the screen is completely black,
+        -- remove the old scene and create the new one.
         self:loadNewScene()
-        transitionTimer = self:wipeTransition(400, 0)
-        transitionTimer.timerEndedCallback = function()
+
+        -- Reveal the new scene.
+        local revealTimer =
+            self:wipeTransition(400, 0)
+
+        revealTimer.timerEndedCallback = function()
+
             self.transitioning = false
-            self.transitionSprite:remove()
-            -- Temp fix to resolve bug with sprite artifacts/smearing after transition
-            local allSprites = gfx.sprite.getAllSprites()
-            for i=1,#allSprites do
-                allSprites[i]:markDirty()
+
+            if self.transitionSprite then
+                self.transitionSprite:remove()
+                self.transitionSprite = nil
             end
+
+            -- Force the final scene to redraw.
+            self:markAllSpritesDirty()
         end
     end
 end
 
 
 function SceneManager:loadNewScene()
+
+    -- Remove the old scene.
     self:cleanupScene()
-    -- Keep a reference so the NEXT switch can clean this one up properly (see cleanupScene)
-    self.currentScene = self.newScene(table.unpack(self.sceneArgs))
+
+    -- Create the new scene.
+    self.currentScene =
+        self.newScene(table.unpack(self.sceneArgs))
+
+    self.newScene = nil
+    self.sceneArgs = nil
+
+    -- Make sure the new scene gets drawn.
+    self:markAllSpritesDirty()
 end
 
-function SceneManager:cleanupScene()
-    -- Let the outgoing scene clean up anything sprite.removeAll() won't catch,
-    -- e.g. FishingScene's "Back to pier" system menu item. Without this, that
-    -- entry stays in the menu and gets duplicated next time you go fishing.
-    if self.currentScene and self.currentScene.cleanup then
-        self.currentScene:cleanup()
-    end
-    self.currentScene = nil
 
-    gfx.sprite.removeAll()
-    self:removeAllTimers()
+function SceneManager:cleanupScene()
+
+    if self.currentScene then
+        self.currentScene:cleanup()
+        self.currentScene = nil
+    end
+
     gfx.setDrawOffset(0, 0)
 end
 
-function SceneManager:wipeTransition(startValue, endValue)
-    local transitionSprite = self:createTransitionSprite()
-    transitionSprite:setClipRect(0, 0, startValue, 240)
 
-    local transitionTimer = pd.timer.new(self.transitionTime, startValue, endValue, pd.easingFunctions.inOutCubic)
-    transitionTimer.updateCallback = function(timer)
-        transitionSprite:setClipRect(0, 0, timer.value, 240)
+function SceneManager:markAllSpritesDirty()
+
+    local sprites = gfx.sprite.getAllSprites()
+
+    for i = 1, #sprites do
+        sprites[i]:markDirty()
     end
+end
+
+
+function SceneManager:wipeTransition(startValue, endValue)
+
+    local transitionSprite =
+        self:createTransitionSprite()
+
+    transitionSprite:setClipRect(
+        0,
+        0,
+        startValue,
+        240
+    )
+
+    local transitionTimer = pd.timer.new(
+        self.transitionTime,
+        startValue,
+        endValue,
+        pd.easingFunctions.inOutCubic
+    )
+
+    transitionTimer.updateCallback = function(timer)
+
+        if transitionSprite then
+            transitionSprite:setClipRect(
+                0,
+                0,
+                timer.value,
+                240
+            )
+        end
+    end
+
     return transitionTimer
 end
 
 
 function SceneManager:createTransitionSprite()
-    local filledRect = gfx.image.new(400, 240, gfx.kColorBlack)
-    local transitionSprite = gfx.sprite.new(filledRect)
-    transitionSprite:moveTo(200, 120)
-    transitionSprite:setZIndex(10000)
-    transitionSprite:setIgnoresDrawOffset(true)
-    transitionSprite:add()
-    self.transitionSprite = transitionSprite
-    return transitionSprite
-end
 
-function SceneManager:removeAllTimers()
-    local allTimers = pd.timer.allTimers()
-    for _, timer in ipairs(allTimers) do
-        timer:remove()
+    if self.transitionSprite then
+        self.transitionSprite:remove()
     end
+
+    local image = gfx.image.new(
+        400,
+        240,
+        gfx.kColorBlack
+    )
+
+    local sprite = gfx.sprite.new(image)
+
+    sprite:moveTo(200, 120)
+    sprite:setZIndex(10000)
+    sprite:setIgnoresDrawOffset(true)
+    sprite:add()
+
+    self.transitionSprite = sprite
+
+    return sprite
 end
