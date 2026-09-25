@@ -29,7 +29,7 @@ function FishingScene:init()
     self.safeMaxReelSpeed = 7
 
     self.escapeTimer = 0
-    self.escapeTime = 2
+    self.escapeTime = 5
 
     self.shore = gfx.sprite.new(
         gfx.image.new(1, 240, gfx.kColorBlack)
@@ -135,14 +135,14 @@ function FishingScene:fightingFishUpdate(
     change,
     acceleratedChange
 )
-    local reelSpeed = math.abs(acceleratedChange * acceleratedChange)
+    local reelSpeed = math.abs(change * acceleratedChange)
 
     if reelSpeed >= self.safeMinReelSpeed
         and reelSpeed <= self.safeMaxReelSpeed
     then
         self.reelProgress += 100 / (5 * 30)
 
-        self.escapeTimer -= 5 / 30
+        self.escapeTimer -= 2 / 30
 
         if self.escapeTimer < 0 then
             self.escapeTimer = 0
@@ -182,6 +182,7 @@ function FishingScene:drawOverlay()
         self:drawCastPower()
 
     elseif self.state == STATES.fightingFish then
+        self.rod:draw()
         self:drawFishFight()
     end
 end
@@ -223,75 +224,96 @@ function FishingScene:drawCastPower()
 end
 
 function FishingScene:drawFishFight()
+
     local barX = 100
-    local barY = 220
     local barWidth = 200
+
+    -- =========================
+    -- REELING BAR (lower)
+    -- =========================
+
+    local reelBarY = 195
     local barHeight = 12
 
     gfx.setColor(gfx.kColorWhite)
 
     gfx.fillRect(
         barX,
-        barY,
+        reelBarY,
         barWidth,
         barHeight
     )
 
     gfx.setColor(gfx.kColorBlack)
 
-    local fillWidth =
+    local reelFillWidth =
         barWidth *
         (self.reelProgress / 100)
 
     gfx.fillRect(
         barX,
-        barY,
-        fillWidth,
+        reelBarY,
+        reelFillWidth,
         barHeight
     )
 
     gfx.drawRect(
         barX,
-        barY,
+        reelBarY,
         barWidth,
         barHeight
     )
 
-    local warningX = 100
-    local warningY = 200
-    local warningWidth = 200
-    local warningHeight = 8
+    gfx.drawText(
+        "REELING",
+        barX,
+        reelBarY + barHeight + 4
+    )
+
+    -- =========================
+    -- ESCAPING BAR (upper)
+    -- =========================
+
+    local escapeBarY = 175
+    local escapeBarHeight = 8
 
     gfx.setColor(gfx.kColorWhite)
 
     gfx.fillRect(
-        warningX,
-        warningY,
-        warningWidth,
-        warningHeight
+        barX,
+        escapeBarY,
+        barWidth,
+        escapeBarHeight
     )
 
     gfx.setColor(gfx.kColorBlack)
 
     gfx.drawRect(
-        warningX,
-        warningY,
-        warningWidth,
-        warningHeight
+        barX,
+        escapeBarY,
+        barWidth,
+        escapeBarHeight
     )
 
-    local warningProgress =
+    local escapeProgress =
         self.escapeTimer / self.escapeTime
 
-    local warningFill =
-        warningWidth * warningProgress
+    local escapeFillWidth =
+        barWidth * escapeProgress
 
     gfx.fillRect(
-        warningX,
-        warningY,
-        warningFill,
-        warningHeight
+        barX,
+        escapeBarY,
+        escapeFillWidth,
+        escapeBarHeight
     )
+
+    gfx.drawText(
+        "ESCAPING",
+        barX,
+        escapeBarY - 18
+    )
+
 end
 
 function FishingScene:cleanup()
