@@ -231,6 +231,10 @@ function FishingScene:fightingFishUpdate(
 
         GAME_DATA.catchOfTheDay += 1
 
+    -- self.fish.type is set by Fish:update() when it spawned; record that species
+        local id = self.fish.type.id
+        GAME_DATA.catches[id] = (GAME_DATA.catches[id] or 0) + 1
+
         self.fish:remove()
 
         self.reelProgress = 0

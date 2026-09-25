@@ -22,7 +22,7 @@ function GameStartScene:init()
     gfx.pushContext(textImage)
 
         gfx.drawText(
-            "Catch so far: " .. GAME_DATA.catchOfTheDay,
+            "Catch so far: " .. getCatchTotal(),
             10,
             10
         )

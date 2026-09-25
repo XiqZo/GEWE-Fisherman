@@ -24,8 +24,9 @@ function SceneManager:switchScene(scene, ...)
     self.transitioning = true
 
     self.newScene = scene
-    self.sceneArgs = { ... }
-
+    local args = {...}
+    self.sceneArgs = args
+    
     self:startTransition()
 end
 
