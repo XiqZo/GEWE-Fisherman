@@ -1,6 +1,6 @@
 name=Game
 author=Gabija, Emil, Ester, Waleed
-description=
-bundleID=
+description=Fishing game
+bundleID=com.gewe.fishinggame
 version=1.0.0
 buildNumber=1

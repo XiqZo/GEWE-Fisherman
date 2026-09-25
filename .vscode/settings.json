@@ -34,7 +34,7 @@
         "./.vscode/playdate-luacats"
     ],
     // REMOVE IF ON WINDOWS
-     "playdate-debug.sdkPath": "/opt/playdate-sdk",
+    "playdate-debug.sdkPath": "/opt/playdate-sdk",
     // ====== Playdate Debug Settings ======
     // Output directory for the compiled game bundle (omitting this places it in the project root)
     "playdate-debug.outputPath": "builds"
