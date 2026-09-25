@@ -30,7 +30,7 @@ function SailingScene:init()
     -- Scene itself
     self:add()
 
-        self.pierMenuItem = menu:addMenuItem(
+    self.pierMenuItem = menu:addMenuItem(
         "Back to pier",
         function()
             SCENE_MANAGER:switchScene(GameStartScene)
@@ -110,6 +110,13 @@ function SailingScene:cleanup()
     if self.fish then
         self.fish:remove()
         self.fish = nil
+    end
+
+    if self.pierMenuItem then
+        pd.getSystemMenu():removeMenuItem(
+            self.pierMenuItem
+        )
+        self.pierMenuItem = nil
     end
 
     self:remove()
