@@ -135,7 +135,7 @@ function FishingScene:fightingFishUpdate(
     change,
     acceleratedChange
 )
-    local reelSpeed = math.abs(acceleratedChange * acceleratedChange)
+    local reelSpeed = math.abs(change * acceleratedChange)
 
     if reelSpeed >= self.safeMinReelSpeed
         and reelSpeed <= self.safeMaxReelSpeed
